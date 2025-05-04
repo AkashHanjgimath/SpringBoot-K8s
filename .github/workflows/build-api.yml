@@ -29,4 +29,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image using Spring Boot Buildpacks
-        run: ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=${{ secrets.DOCKER_USERNAME }}/bookmarker-api:latest
+        run: ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=${{ secrets.DOCKER_USERNAME }}/bookmarker-api
