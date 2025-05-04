@@ -1,30 +1,27 @@
-# Use an official Java runtime as a parent image
-FROM openjdk:17-jdk-slim as builder
-
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy the pom.xml and install dependencies
-COPY pom.xml .
-RUN ./mvnw dependency:go-offline
-
-# Copy the source code into the container
-COPY src /app/src
-
-# Package the application
-RUN ./mvnw clean package -DskipTests
-
-# Create a new image from the OpenJDK image
+# Use OpenJDK base image
 FROM openjdk:17-jdk-slim
 
-# Set the working directory in the container
+# Set working directory
 WORKDIR /app
 
-# Copy the jar from the builder stage to the container
-COPY --from=builder /app/target/bookmarker-api-*.jar /app/bookmarker-api.jar
+# Copy Maven wrapper and permission setup
+COPY mvnw .
+COPY .mvn .mvn
 
-# Expose port 8088
-EXPOSE 8088
+# Copy the rest of the project files
+COPY pom.xml .
+COPY src ./src
 
-# Command to run the application
-ENTRYPOINT ["java", "-jar", "/app/bookmarker-api.jar"]
+# Make mvnw executable
+RUN chmod +x mvnw
+
+# Build the application
+RUN ./mvnw clean package -DskipTests
+
+# Second stage to create a smaller final image
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=0 /app/target/*.jar app.jar
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
