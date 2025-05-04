@@ -3,7 +3,7 @@ name: Build and Push Spring Boot Docker Image (Buildpacks)
 on:
   push:
     branches:
-      - main  # Change as needed
+      - main
 
 jobs:
   build-and-push:
@@ -18,6 +18,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      - name: Make mvnw executable
+        run: chmod +x ./mvnw
 
       - name: Build Docker image using Spring Boot's build-image goal
         run: ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=${{ secrets.DOCKER_USERNAME }}/bookmarker-api:latest
