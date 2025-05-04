@@ -28,7 +28,7 @@ jobs:
       - name: Debug Docker Secrets (TEMP)
         run: |
           echo "Username is: '${{ secrets.DOCKER_USERNAME }}'"
-          echo "Password length: $(echo '${{ secrets.DOCKER_PASSWORD }}' | wc -c)"
+          echo "Password length: $(echo '${{ secrets.DOCKER_PASSWORD }}' | wc -c)"     
 
       - name: Docker login
         run: |
