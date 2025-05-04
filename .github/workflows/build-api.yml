@@ -39,7 +39,7 @@ jobs:
       # Step 5: Build the Docker image from the Dockerfile
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/bookmarker-api:latest .
+          docker build -t akash466/bookmarker-api:latest .
 
       # Step 6: Push the Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
