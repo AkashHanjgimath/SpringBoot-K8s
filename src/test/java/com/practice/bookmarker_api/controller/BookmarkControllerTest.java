@@ -4,11 +4,13 @@ import com.practice.bookmarker_api.models.Bookmark;
 import com.practice.bookmarker_api.repository.BookmarkRepository;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -18,13 +20,16 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @SpringBootTest
 @AutoConfigureMockMvc
-
 @TestPropertySource(properties = {
         "spring.datasource.url=jdbc:tc:postgresql:17-alpine:///demo"
 })
@@ -83,6 +88,46 @@ class BookmarkControllerTest {
                 .andExpect(jsonPath("$.hasPrevious", CoreMatchers.equalTo(hasPrevious)))
 
         ;
+    }
+
+    @Test
+    void shouldCreateBookmarkSuccessfully() throws Exception {
+        this.mockMvc.perform(
+                        post("/api/bookmarks")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+            {
+                "title": "Practice SpringBoot+K8s",
+                "url": "https://www.dummy.com"
+            }
+            """)
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", notNullValue()))
+                .andExpect(jsonPath("$.title", is("Practice SpringBoot+K8s")))
+                .andExpect(jsonPath("$.url", is("https://www.dummy.com")));
+    }
+
+    @Test
+    void shouldFailToCreateBookmarkWhenUrlIsNotPresent() throws Exception {
+        this.mockMvc.perform(
+                        post("/api/bookmarks")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                {
+                    "title": "Practice SpringBoot+K8s"
+                }
+                """)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(header().string("Content-Type", is("application/problem+json")))
+                .andExpect(jsonPath("$.type", is("https://zalando.github.io/problem/constraint-violation")))
+                .andExpect(jsonPath("$.title", is("Constraint Violation")))
+                .andExpect(jsonPath("$.status", is(400)))
+                .andExpect(jsonPath("$.violations", hasSize(1)))
+                .andExpect(jsonPath("$.violations[0].field", is("url")))
+                .andExpect(jsonPath("$.violations[0].message", is("Url Should not be empty")))
+                .andReturn();
     }
 
 }
