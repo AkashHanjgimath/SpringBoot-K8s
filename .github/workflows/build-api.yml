@@ -25,11 +25,6 @@ jobs:
       - name: Build with Maven
         run: ./mvnw -ntp verify # Build the project with Maven
 
-      - name: Debug Docker Secrets (TEMP)
-        run: |
-          echo "Username is: '${{ secrets.DOCKER_USERNAME }}'"
-          echo "Password length: $(echo '${{ secrets.DOCKER_PASSWORD }}' | wc -c)"     
-
       - name: Docker login
         run: |
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
