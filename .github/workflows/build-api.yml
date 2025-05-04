@@ -10,31 +10,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Set up JDK 17 for the Spring Boot application
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
+      # Step 3: Make sure the Maven wrapper is executable
       - name: Make mvnw executable
         run: chmod +x ./mvnw
 
+      # Step 4: Log in to Docker Hub using GitHub Secrets for Docker credentials
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # Step 5: Build the Docker image from the Dockerfile
       - name: Build Docker image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/bookmarker-api:latest .
 
+      # Step 6: Push the Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/bookmarker-api:latest
 
+      # Optional Step 7: List Docker images to confirm build
       - name: List Docker images
         run: docker images
