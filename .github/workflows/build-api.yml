@@ -32,10 +32,13 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           # Build Docker image using Spring Boot's build-image goal
-          ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=${{ secrets.DOCKER_USERNAME }}/bookmarker-api
+          ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=${{ secrets.DOCKER_USERNAME }}/bookmarker-api:latest
+
+          # Verify the Docker image exists locally
+          docker images
 
           # Login to Docker Hub with secrets
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-
+          
           # Push the Docker image to Docker Hub
-          docker push ${{ secrets.DOCKER_USERNAME }}/bookmarker-api
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookmarker-api:latest
