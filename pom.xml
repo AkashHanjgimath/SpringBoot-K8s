@@ -125,9 +125,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<image>
-						<name>akash466/bookmark-api</name>
-					</image>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
