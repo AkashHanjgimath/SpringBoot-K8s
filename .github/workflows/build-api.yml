@@ -23,7 +23,12 @@ jobs:
         run: chmod +x ./mvnw  # Ensure the mvnw script is executable
 
       - name: Build with Maven
-        run: ./mvnw -ntp verify  # Build the project with Maven
+        run: ./mvnw -ntp verify # Build the project with Maven
+
+      - name: Debug Docker Secrets (TEMP)
+        run: |
+          echo "Username is: '${{ secrets.DOCKER_USERNAME }}'"
+          echo "Password length: $(echo '${{ secrets.DOCKER_PASSWORD }}' | wc -c)"
 
       - name: Docker login
         run: |
