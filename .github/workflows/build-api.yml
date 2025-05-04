@@ -2,14 +2,13 @@ name: Build
 
 on:
   push:
-    branches: [ "**" ]
- 
+    branches: [ "**" ]  # Trigger for all branches
 
 jobs:
   build-bookmarker-api:
     name: Build bookmarker-api
     runs-on: ubuntu-latest
-   
+
     steps:
       - uses: actions/checkout@v4
 
@@ -20,8 +19,11 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Grant execute permission to mvnw
+        run: chmod +x ./mvnw  # Ensure the mvnw script is executable
+
       - name: Build with Maven
-        run: ./mvnw -ntp verify
+        run: ./mvnw -ntp verify  # Build the project with Maven
 
       - if: ${{ github.ref == 'refs/heads/main' }}
         name: Build and Publish Docker Image
